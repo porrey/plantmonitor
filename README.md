@@ -1,2 +1,2 @@
-# plantmonitor
-Plant Monitor and Watering System
+# Plant Monitor and Watering System
+The is the firmware to support a plant monitoring and atering system. More to come...
