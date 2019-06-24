@@ -44,3 +44,4 @@ Thumbs.db
 # Credentials Related #
 ######################
 Credentials.h
+PlantMonitor/Credentials.h
