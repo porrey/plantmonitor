@@ -40,3 +40,7 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+# Credentials Related #
+######################
+Credentials.h
