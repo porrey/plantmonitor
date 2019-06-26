@@ -1,17 +1,17 @@
 // Copyright © 2019 Daniel Porrey
 //
 // This file is part of the Plant Monitor and Watering System.
-// 
+//
 // This software is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // This software is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this software. If not, see http://www.gnu.org/licenses/.
 //
@@ -21,6 +21,7 @@
 #include "SpectrumMonitor.h"
 #include "WaterPumpController.h"
 #include "MyPins.h"
+#include <time.h>
 
 // ***
 // *** Temperature units to use.
@@ -28,12 +29,21 @@
 enum temperatureUnit _myUnits = FAHRENHEIT;
 
 // ***
+// *** Timezone settings.
+// ***
+#define TZ              -6            // Offset in hours (utc+)
+#define DST_MN          60            // Number of minutes for daylight savings currently active.
+#define TZ_MN           ((TZ)*60)
+#define TZ_SEC          ((TZ)*3600)
+#define DST_SEC         ((DST_MN)*60)
+
+// ***
 // *** Define the parameters needed for the Soil Monitor. This is the range
 // *** where the sensor behaves in an approximate linear fashion. The values
-// *** here represent voltages. Your sensor may need to be calibrated. This 
+// *** here represent voltages. Your sensor may need to be calibrated. This
 // *** can be done by taking the voltage reading with the sensor submerged
 // *** in water up to the black line. This is the wet value. Next take a voltage
-// *** reading with just the tip of the metal electrodes just barely in in 
+// *** reading with just the tip of the metal electrodes just barely in in
 // *** the water. This is the dry value.
 // ***
 #define SOIL_MOISTURE_DRY 1.91
@@ -71,7 +81,7 @@ Cloud _cloud;
 
 // ***
 // *** Setup a timer to read sensors every 10 seconds
-// *** and display the results on the sewrial port.
+// *** and display the results on the serial port.
 // ***
 #define READ_SENSOR_DATA_INTERVAL 10000
 os_timer_t _readSensorDataTimer;
@@ -100,8 +110,8 @@ void setup()
   }
 
   // ***
-  // *** Let the system stabilize. This prevents garbage output
-  // *** on the serial port.
+  // *** Let the system stabilize. This prevents (or minimizes)
+  // *** garbage output on the serial port.
   // ***
   delay(1000);
 
@@ -153,6 +163,11 @@ void setup()
   os_timer_setfn(&_sendSensorDataTimer, _sendSensorDataTimerCallback, NULL);
   os_timer_arm(&_sendSensorDataTimer, SEND_SENSOR_DATA_INTERVAL, true);
 
+  // ***
+  // *** Configure the device to get the time from the Internet.
+  // ***
+  configTime(TZ_SEC, DST_SEC, "pool.ntp.org");
+  
   // ***
   // *** The system is initialized and ready to go.
   // ***
@@ -288,9 +303,19 @@ void displaySensorData()
   if (_sensorData.initialized)
   {
     // ***
-    // *** Read the environmental temperature and humidity.
+    // *** Insert a blank line.
     // ***
     Serial.println();
+    
+    // ***
+    // *** Display the current time.
+    // ***
+    time_t now = time(nullptr);
+    Serial.print("Current Date and Time: "); Serial.println(ctime(&now));
+
+    // ***
+    // *** Read the environmental temperature and humidity.
+    // ***
     Serial.print(F("Air Temperature: ")); Serial.print(_sensorData.environmentalTemperature); Serial.println(_myUnits == FAHRENHEIT ? F(" F") : F(" C"));
     Serial.print(F("Humidity: ")); Serial.print(_sensorData.environmentalRelativeHumidity); Serial.println(F("%"));
 
