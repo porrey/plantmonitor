@@ -22,8 +22,8 @@
 // *** The are the channels on the MCP3008 used by the soil
 // *** moisture sensor.
 // ***
-#define SOIL_ANALOG_CHANNEL 0
-#define SOIL_DIGITAL_CHANNEL 1
+#define SOIL_ANALOG_CHANNEL 7
+#define SOIL_DIGITAL_CHANNEL 6
 
 // ***
 // *** The digital pin on which the Dallas Temperature (DS18B20)
