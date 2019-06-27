@@ -4,7 +4,7 @@ The is the firmware to support a plant monitoring and atering system. More to co
 Breadboard diagram:
 
 ## Prototype
-The image below demonstrates the circuit in as a protype on a breadbaord suitable for testing.
+The image below shows the circuit protype on a breadbaord suitable for testing.
 
 ![](https://github.com/porrey/plantmonitor/raw/master/Fritzing/Plant%20Monitor_bb.png)
 
