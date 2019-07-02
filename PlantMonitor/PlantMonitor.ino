@@ -22,6 +22,7 @@
 #include "WaterPumpController.h"
 #include "MyPins.h"
 #include <time.h>
+#include <WiFiManager.h>
 
 // ***
 // *** Temperature units to use.
@@ -114,6 +115,15 @@ void setup()
   // *** garbage output on the serial port.
   // ***
   delay(1000);
+  
+  // ***
+  // *** WiFi Manager is used to get WiFi credentials setup using another
+  // *** computer or mobile phone. Local initialization. Once its business
+  // *** is done, there is no need to keep it around
+  // ***
+  WiFiManager wifiManager;
+  String ssid = "PlantMonitor-" + String(ESP.getFlashChipId(), HEX);
+  wifiManager.autoConnect(ssid.c_str());
 
   // ***
   // *** Show the startup message.
@@ -167,7 +177,7 @@ void setup()
   // *** Configure the device to get the time from the Internet.
   // ***
   configTime(TZ_SEC, DST_SEC, "pool.ntp.org");
-  
+
   // ***
   // *** The system is initialized and ready to go.
   // ***
@@ -306,7 +316,7 @@ void displaySensorData()
     // *** Insert a blank line.
     // ***
     Serial.println();
-    
+
     // ***
     // *** Display the current time.
     // ***
