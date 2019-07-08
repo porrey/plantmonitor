@@ -23,7 +23,11 @@
 #define IO_USERNAME   "[enter your user name here]"
 #define IO_KEY        "[enter your key here]"
 
-#define WIFI_SSID     "[enter your wi-fi SSID here]"
-#define WIFI_PASS     "[enter your wi-fi passphrase here]"
+// ***
+// *** Keep these empty when using WiFiManager, otherwise
+// *** enter WiFi your credentials.
+// ***
+#define WIFI_SSID     ""
+#define WIFI_PASS     ""
 
 #endif
