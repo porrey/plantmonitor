@@ -20,14 +20,17 @@
 
 #include <Arduino.h>
 
-#define IO_USERNAME   "[enter your user name here]"
-#define IO_KEY        "[enter your key here]"
-
 // ***
-// *** Keep these empty when using WiFiManager, otherwise
-// *** enter WiFi your credentials.
+// *** Leave these empty/blank when using WiFiManager;
+// *** otherwise enter WiFi your credentials.
 // ***
 #define WIFI_SSID     ""
 #define WIFI_PASS     ""
+
+// ***
+// *** Enter your Adafruit IO credentials.
+// ***
+#define IO_USERNAME   "[enter your user name here]"
+#define IO_KEY        "[enter your key here]"
 
 #endif
