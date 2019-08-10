@@ -33,6 +33,7 @@ class WaterPumpController
     void off();
     void on();
     void on(uint8_t);
+    bool on(uint8_t, uint32_t);
     bool isOn();
 
   private:

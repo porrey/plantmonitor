@@ -38,7 +38,7 @@ void WaterPumpController::begin()
 bool WaterPumpController::isOn()
 {
   // ***
-  // *** Return the value of the 
+  // *** Return the value of the
   // *** internal flag.
   // ***
   return this->_isOn;
@@ -105,4 +105,18 @@ void WaterPumpController::on(uint8_t speed)
     // ***
     this->_isOn = true;
   }
+}
+
+bool WaterPumpController::on(uint8_t speed, uint32_t duration)
+{
+  uint32_t stamp = millis();
+
+  this->on(speed);
+
+  while ((millis() - stamp) <= duration)
+  {
+    yield();
+  }
+
+  this->off();
 }

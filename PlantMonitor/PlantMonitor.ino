@@ -84,17 +84,32 @@ Cloud _cloud;
 // *** Setup a timer to read sensors every 10 seconds
 // *** and display the results on the serial port.
 // ***
-#define READ_SENSOR_DATA_INTERVAL 10000
+#define READ_SENSOR_DATA_INTERVAL 1000 * 10
 os_timer_t _readSensorDataTimer;
 volatile bool _readSensorData = false;
 
 // ***
-// *** Setup a timer to send the sensor data every
-// *** 60 seconds to the cloud.
+// *** Setup a timer to send the sensor data to the
+// *** cloud every 2 minutes.
 // ***
-#define SEND_SENSOR_DATA_INTERVAL 60000
+#define SEND_SENSOR_DATA_INTERVAL 1000 * 60 * 2
 os_timer_t _sendSensorDataTimer;
 volatile bool _sendSensorData = false;
+
+// ***
+// *** Setup a timer to check the water quality
+// *** every 10 minutes.
+// ***
+#define CHECK_SOIL_QUALITY_INTERVAL 1000 * 60 * 10
+os_timer_t _checkSoilQualityTimer;
+volatile bool _checkSoilQuality = false;
+#define WATER_PUMP_RUN_TIME  1000 * 30
+#define WATER_PUMP_RUN_LEVEL 200
+
+// ***
+// *** Keep track of the last watering time.
+// ***
+uint32_t _lastWaterTime = 0;
 
 void setup()
 {
@@ -115,7 +130,7 @@ void setup()
   // *** garbage output on the serial port.
   // ***
   delay(1000);
-  
+
   // ***
   // *** WiFi Manager is used to get WiFi credentials setup using another
   // *** computer or mobile phone. Local initialization. Once its business
@@ -174,6 +189,12 @@ void setup()
   os_timer_arm(&_sendSensorDataTimer, SEND_SENSOR_DATA_INTERVAL, true);
 
   // ***
+  // *** Initialize the check soil quality timer.
+  // ***
+  os_timer_setfn(&_checkSoilQualityTimer, _checkSoilQualityTimerCallback, NULL);
+  os_timer_arm(&_checkSoilQualityTimer, CHECK_SOIL_QUALITY_INTERVAL, true);
+
+  // ***
   // *** Configure the device to get the time from the Internet.
   // ***
   configTime(TZ_SEC, DST_SEC, "pool.ntp.org");
@@ -205,6 +226,11 @@ void loop()
   sendSensorData();
 
   // ***
+  // *** Check if the pklant needs water.
+  // ***
+  checkSoilQuality();
+
+  // ***
   // *** Yield to the microcontroller.
   // ***
   yield();
@@ -224,6 +250,47 @@ void readSensorDataTimerCallback(void *pArg)
 void _sendSensorDataTimerCallback(void *pArg)
 {
   _sendSensorData = true;
+}
+
+// ***
+// *** Called by the timer.
+// ***
+void _checkSoilQualityTimerCallback(void *pArg)
+{
+  _checkSoilQuality = true;
+}
+
+// ***
+// *** Called by the loop to get sensor data.
+// ***
+void checkSoilQuality()
+{
+  if (_checkSoilQuality)
+  {
+    // ***
+    // *** Reset the flag.
+    // ***
+    _checkSoilQuality = false;
+
+    Serial.print("Checking soil quality.");
+
+    // ***
+    // *** Check if the soil is dry.
+    // ***
+    if (_soilMonitor.getQuality() == "Dry")
+    {
+      // ***
+      // *** Run the water pump.
+      // ***
+      Serial.print("Running water pump for "); Serial.print(WATER_PUMP_RUN_TIME / 1000); Serial.print(" seconds at "); Serial.print(WATER_PUMP_RUN_LEVEL / 255 * 100); Serial.println("%.");
+      _waterPumpController.on(WATER_PUMP_RUN_LEVEL, WATER_PUMP_RUN_TIME);
+      Serial.println("Stopping water pump.");
+    }
+    else
+    {
+      Serial.print("Soil quality is "); Serial.print(_soilMonitor.getQuality()); Serial.println(".");
+    }
+  }
 }
 
 // ***
@@ -251,6 +318,7 @@ void readSensorData()
     // ***
     // *** Show the data on the serial port.
     // ***
+    Serial.println("Displaying sensor data.");
     displaySensorData();
   }
 }
@@ -284,6 +352,7 @@ void sendSensorData()
     // *** Reset the is active flag.
     // ***
     Serial.println("Data send to cloud completed.");
+    Serial.println();
   }
 }
 
