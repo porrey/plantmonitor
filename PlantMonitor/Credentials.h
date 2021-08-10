@@ -30,7 +30,7 @@
 // ***
 // *** Enter your Adafruit IO credentials.
 // ***
-#define IO_USERNAME   "porrey"
-#define IO_KEY        "2f18fa12dd61421eb99d913075039c53"
+#define IO_USERNAME   ""
+#define IO_KEY        ""
 
 #endif
