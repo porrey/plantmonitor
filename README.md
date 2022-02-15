@@ -1,5 +1,5 @@
 # Plant Monitor and Watering System
-The is the firmware to support a plant monitoring and watering system. More to come...
+The is the firmware to support a plant monitoring and watering system.
 
 Breadboard diagram:
 
